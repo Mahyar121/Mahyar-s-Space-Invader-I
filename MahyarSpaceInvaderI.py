@@ -364,7 +364,7 @@ class MahyarSpaceInvaderI:
                 self.bulletUpdate()
                 self.enemyUpdate()
                 self.playerUpdate()
-            elif self.lives == 0:
+            elif self.lives <= 0:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Lose!", -1, (52,255,0)), (100, 200))
             self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, (255, 255, 255)), (20, 10))
             self.screen.blit(self.font.render("Score: {}".format(self.score), -1, (255, 255, 255)), (400, 10))
