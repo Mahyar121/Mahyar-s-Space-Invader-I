@@ -19,6 +19,7 @@ class MahyarSpaceInvaderI:
         self.green = (0, 200, 0)
         self.brightGreen = (0, 255, 0)
         self.red = (255, 0, 0)
+        self.yellow = (255,252,124)
         #setting up the font for the game
         pygame.font.init()
         self.font = pygame.font.Font("game_font.ttf", 25)
@@ -76,6 +77,7 @@ class MahyarSpaceInvaderI:
         self.enemies = []
         self.barrierParticles = []
         self.enemycount = 50
+        self.enemiesCopy = []
         startY = 50
         startX = 50
 
@@ -91,6 +93,7 @@ class MahyarSpaceInvaderI:
             for columns in range(10):
                 out.append((enemy,pygame.Rect(startX * columns, startY * rows, 35, 35)))
             self.enemies.append(out)
+            self.enemiesCopy.append(out)
         self.chance = 990
 
         barrierX = 50
@@ -103,6 +106,94 @@ class MahyarSpaceInvaderI:
                 for b in b:
                     if b!= 0:
                         self.barrierParticles.append(pygame.Rect(barrierX + space * offset, barrierY, 5,5))
+                    barrierX += 5
+                barrierX = 50 * offset
+                barrierY += 3
+            barrierY = 400
+
+    def playAgain(self):
+
+        self.score = 0
+        self.lives = 3
+
+        # the 1 is the colored portion of the barrier
+        barrierDesign = [[], [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+                         [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+                         [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+                         [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                         [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+                         [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]]
+        # the enemy sprites
+        self.enemySprites = {
+            0: [pygame.image.load("e1_0.png").convert(), pygame.image.load("e1_1.png").convert()],
+            1: [pygame.image.load("e2_0.png").convert(), pygame.image.load("e2_1.png").convert()],
+            2: [pygame.image.load("e3_0.png").convert(), pygame.image.load("e3_1.png").convert()],
+        }
+        # the player sprite
+        self.player = pygame.image.load("player.png").convert()
+        # bomb sprites
+        self.bomb1 = pygame.image.load("rocket.png")
+        self.bomb2 = pygame.image.load("rocket2.png")
+        self.bombCurrentImage = 1
+        self.bombCount = 10
+        self.bomb = None
+
+        pygame.display.set_icon(self.player)
+        self.animationOn = 0
+        self.direction = 1
+        self.enemySpeed = 10
+        self.lastEnemyMove = 0
+        self.playerPosX = 400
+        self.playerPosY = 550
+        self.bullet = None
+        self.bullets = []
+        self.enemyBullet = None
+        self.enemyBullets = []
+        self.enemies = []
+        self.barrierParticles = []
+        self.enemycount = 50
+        self.enemiesCopy = []
+        startY = 50
+        startX = 50
+
+        # positioning the enemy sprites in the rows
+        for rows in range(5):
+            out = []
+            if rows < 1:
+                enemy = 2
+            elif rows < 3:
+                enemy = 1
+            else:
+                enemy = 0
+            for columns in range(10):
+                out.append((enemy, pygame.Rect(startX * columns, startY * rows, 35, 35)))
+            self.enemies.append(out)
+            self.enemiesCopy.append(out)
+        self.chance = 990
+
+        barrierX = 50
+        barrierY = 400
+        space = 100
+
+        # creating a barrier
+        for offset in range(1, 5):
+            for b in barrierDesign:
+                for b in b:
+                    if b != 0:
+                        self.barrierParticles.append(pygame.Rect(barrierX + space * offset, barrierY, 5, 5))
                     barrierX += 5
                 barrierX = 50 * offset
                 barrierY += 3
@@ -435,6 +526,7 @@ class MahyarSpaceInvaderI:
 
 # GameLOOP ------------------------------------------------------------------------------------------------------------
     def run(self):
+
         bombTimer = 20
         fpsCount = 0
         clock = pygame.time.Clock()
@@ -467,7 +559,18 @@ class MahyarSpaceInvaderI:
                 pygame.draw.rect(self.screen, (100,255,100), b)
 
             if self.enemycount == 0:
-                self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Win!", -1, (52,255,0)), (100,200))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Win!", -1, (52,255,0)), (100,70))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Press   to Play Again", -1, self.brightGreen),(50, 200))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("P", -1, self.teal), (160, 200))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Press    to go to MainMenu", -1, self.brightGreen),(50, 250))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("M", -1, self.teal), (160, 250))
+                key = pygame.key.get_pressed()
+                if key[K_p]:
+                    self.playAgain()
+                    self.run()
+                if key[K_m]:
+                    self.playAgain()
+                    self.game_intro()
             elif self.lives > 0:
                 self.bombUpdate()
                 self.enemyBulletUpdate()
@@ -482,7 +585,18 @@ class MahyarSpaceInvaderI:
                     bombTimer -= 1
                 fpsCount += 1
             elif self.lives <= 0:
-                self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Lose!", -1, (52,255,0)), (100, 200))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("GAME OVER!", -1, self.brightGreen), (100, 70))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Press   to Play Again", -1, self.brightGreen),(50,200))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("P", -1, self.teal),(160, 200))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Press    to go to MainMenu", -1, self.brightGreen),(50,250))
+                self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("M", -1, self.teal), (160, 250))
+                key = pygame.key.get_pressed()
+                if key[K_p]:
+                    self.playAgain()
+                    self.run()
+                if key[K_m]:
+                    self.playAgain()
+                    self.game_intro()
             self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, (255, 255, 255)), (20, 10))
             self.screen.blit(self.font.render("Score: {}".format(self.score), -1, (255, 255, 255)), (300, 10))
             self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, (255, 255, 255)), (150, 10))
