@@ -64,6 +64,8 @@ class MahyarSpaceInvaderI:
         self.playerPosY = 550
         self.bullet = None
         self.bullets = []
+        self.enemyBullet = None
+        self.enemyBullets = []
         self.enemies = []
         self.barrierParticles = []
         self.enemycount = 50
@@ -98,42 +100,7 @@ class MahyarSpaceInvaderI:
                 barrierX = 50 * offset
                 barrierY += 3
             barrierY = 400
-
-    def enemyUpdate(self):
-        if not self.lastEnemyMove:
-            for enemy in self.enemies:
-                for enemy in enemy:
-                    enemy = enemy[1]
-                    #if enemy collides with player then the player loses a life and resets position of player
-                    if enemy.colliderect(pygame.Rect(self.playerPosX, self.playerPosY, self.player.get_width(), self.player.get_height())):
-                        self.lives -= 1
-                        self.resetPlayer()
-                    #the x position of the enemy
-                    enemy.x += self.enemySpeed * self.direction
-                    self.lastEnemyMove = 25
-                    # if the enemy is in the map, move them down
-                    if enemy.x >= 750 or enemy.x <= 0:
-                        self.moveEnemiesDown()
-                        self.direction *= -1
-
-                    chance = random.randint(0, 1000)
-                    #how often the enemy shoots
-                    if chance > self.chance:
-                        self.bullets.append(pygame.Rect(enemy.x, enemy.y, 5, 15))
-                        self.score += 10
-            if self.animationOn:
-                self.animationOn -= 1
-            else:
-                self.animationOn += 1
-        else:
-            self.lastEnemyMove -= 1
-    #moves enemy units down
-    def moveEnemiesDown(self):
-        for enemy in self.enemies:
-            for enemy in enemy:
-                enemy = enemy[1]
-                enemy.y += 20
-
+# Player --------------------------------------------------------------------------------------------------------------
     #handles the buttons for the player
     def playerUpdate(self):
         key = pygame.key.get_pressed()
@@ -148,8 +115,77 @@ class MahyarSpaceInvaderI:
         if key[K_SPACE] and not self.bullet:
             self.bullet = pygame.Rect(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15, 5, 10)
 
-
     def bulletUpdate(self):
+        for i, enemy in enumerate(self.enemies):
+            for j, enemy in enumerate(enemy):
+                enemy = enemy[1]
+                # if a bullet hits an enemy you get 100 points
+                if self.bullet and enemy.colliderect(self.bullet):
+                    self.enemies[i].pop(j)
+                    self.enemycount -= 1
+                    self.bullet = None
+                    self.chance -= 1
+                    self.score += 100
+        for x in self.bullets:
+            # speed of bullet
+            x.y += 10
+            # if bullets off the screen then remove it
+            if x.y > 600:
+                self.bullets.remove(x)
+        if self.bullet:
+            self.bullet.y -= 7
+            if self.bullet.y < 0:
+                self.enemyBullet = None
+        for b in self.barrierParticles:
+            check = b.collidelist(self.bullets)
+            if check != -1:
+                self.barrierParticles.remove(b)
+                self.bullets.pop(check)
+            elif self.bullet and b.colliderect(self.bullet):
+                self.barrierParticles.remove(b)
+                self.bullet = None
+
+    def resetPlayer(self):
+        self.playerPosX = 400
+        
+# ENEMY ---------------------------------------------------------------------------------------------------------------
+    def enemyUpdate(self):
+        if not self.lastEnemyMove:
+            for enemy in self.enemies:
+                for enemy in enemy:
+                    enemy = enemy[1]
+                    # if enemy collides with player then the player loses a life and resets position of player
+                    if enemy.colliderect(pygame.Rect(self.playerPosX, self.playerPosY, self.player.get_width(),
+                                                     self.player.get_height())):
+                        self.lives -= 1
+                        self.resetPlayer()
+                    # the x position of the enemy
+                    enemy.x += self.enemySpeed * self.direction
+                    self.lastEnemyMove = 25
+                    # if the enemy is in the map, move them down
+                    if enemy.x >= 750 or enemy.x <= 0:
+                        self.moveEnemiesDown()
+                        self.direction *= -1
+
+                    chance = random.randint(0, 1000)
+                    # how often the enemy shoots
+                    if chance > self.chance:
+                        self.enemyBullets.append(pygame.Rect(enemy.x, enemy.y, 5, 10))
+            if self.animationOn:
+                self.animationOn -= 1
+            else:
+                self.animationOn += 1
+        else:
+            self.lastEnemyMove -= 1
+            # moves enemy units down
+
+    def moveEnemiesDown(self):
+        for enemy in self.enemies:
+            for enemy in enemy:
+                enemy = enemy[1]
+                enemy.y += 20
+
+    def enemyBulletUpdate(self):
         for i, enemy in enumerate(self.enemies):
             for j, enemy in enumerate(enemy):
                 enemy = enemy[1]
@@ -160,42 +196,45 @@ class MahyarSpaceInvaderI:
                     self.bullet = None
                     self.chance -= 1
                     self.score += 100
-        if self.bullet:
-            self.bullet.y -= 10
-            if self.bullet.y < 0:
-                self.bullet = None
-
-        for x in self.bullets:
+        if self.enemyBullet:
+            self.enemyBullet.y -= 7
+            if self.enemeyBullet.y < 0:
+                self.enemyBullet = None
+        for x in self.enemyBullets:
             #speed of bullet
             x.y += 7
             #if bullets off the screen then remove it
             if x.y > 600:
-                self.bullets.remove(x)
+                self.enemyBullets.remove(x)
             # if bullets hits the player then remove a life and reset him
             if x.colliderect(pygame.Rect(self.playerPosX, self.playerPosY, self.player.get_width(), self.player.get_height())):
                 self.lives -= 1
-                self.bullets.remove(x)
+                self.enemyBullets.remove(x)
                 self.resetPlayer()
-
         for b in self.barrierParticles:
-            check = b.collidelist(self.bullets)
+            check = b.collidelist(self.enemyBullets)
             if check != -1:
                 self.barrierParticles.remove(b)
-                self.bullets.pop(check)
-                self.score += 10
-            elif self.bullet and b.colliderect(self.bullet):
+                self.enemyBullets.pop(check)
+            elif self.enemyBullet and b.colliderect(self.enemyBullet):
                 self.barrierParticles.remove(b)
-                self.bullet = None
-                self.score += 10
-
-    def resetPlayer(self):
-        self.playerPosX = 400
-
+                self.enemyBullet = None
+                
+# Text and Buttons -----------------------------------------------------------------------------------------------------
     def text_objects(self, text, font):
         #white font
         textSurface = font.render(text, True, (255,255,255))
         return textSurface, textSurface.get_rect()
 
+    def buttonBorder(self, color, x, y, w, h):
+        pygame.draw.rect(self.screen, color, (x, y, w, h))
+
+    def textButton(self, txt, x, y, w, h, ):
+        textSurface, textRectangle = self.text_objects(txt, self.smallText)
+        textRectangle.center = ((x + (w / 2)), (y + (h / 2)))
+        self.screen.blit(textSurface, textRectangle)
+
+# MainMenu -------------------------------------------------------------------------------------------------------------
     def gameIntroButton(self):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
@@ -250,16 +289,7 @@ class MahyarSpaceInvaderI:
             pygame.display.update()
             clock = pygame.time.Clock()
             clock.tick(15)
-
-    def buttonBorder(self, color, x, y, w, h):
-        pygame.draw.rect(self.screen, color, (x, y, w, h))
-
-    def textButton(self, txt, x, y, w, h,):
-        textSurface, textRectangle = self.text_objects(txt, self.smallText)
-        textRectangle.center = ((x + (w/2)), (y + (h/2)))
-        self.screen.blit(textSurface, textRectangle)
-
-
+# Controls Page -------------------------------------------------------------------------------------------------------
     def controlButtons(self):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
@@ -350,7 +380,7 @@ class MahyarSpaceInvaderI:
             clock = pygame.time.Clock()
             clock.tick(15)
 
-
+# GameLOOP ------------------------------------------------------------------------------------------------------------
     def run(self):
 
         clock = pygame.time.Clock()
@@ -370,17 +400,18 @@ class MahyarSpaceInvaderI:
                 for enemy in enemy: #drawing the enemy and scaling the enemy
                     self.screen.blit(pygame.transform.scale(self.enemySprites[enemy[0]][self.animationOn], (35,35)), (enemy[1].x, enemy[1].y))
             #drawing the player
-            self.screen.blit(pygame.transform.scale(self.player, (50,50)), (self.playerPosX, self.playerPosY))
+            self.screen.blit(self.player, (self.playerPosX, self.playerPosY))
             if self.bullet:
                 pygame.draw.rect(self.screen, (52,255,0), self.bullet)
-            for bullet in self.bullets:
-                pygame.draw.rect(self.screen, (255,255,255), bullet)
+            for Ebullet in self.enemyBullets:
+                pygame.draw.rect(self.screen, (255,255,255), Ebullet)
             for b in self.barrierParticles:
                 pygame.draw.rect(self.screen, (100,255,100), b)
 
             if self.enemycount == 0:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Win!", -1, (52,255,0)), (100,200))
             elif self.lives > 0:
+                self.enemyBulletUpdate()
                 self.bulletUpdate()
                 self.enemyUpdate()
                 self.playerUpdate()
