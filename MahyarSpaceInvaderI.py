@@ -45,16 +45,23 @@ class MahyarSpaceInvaderI:
                          [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]]
         self.display_width = 800
         self.display_height = 600
-        #sets the display resolution
+        # sets the display resolution
         self.screen = pygame.display.set_mode((self.display_width, self.display_height))
-        #the enemy sprites
+        # the enemy sprites
         self.enemySprites = {
             0:[pygame.image.load("e1_0.png").convert(), pygame.image.load("e1_1.png").convert()],
             1:[pygame.image.load("e2_0.png").convert(), pygame.image.load("e2_1.png").convert()],
             2:[pygame.image.load("e3_0.png").convert(), pygame.image.load("e3_1.png").convert()],
         }
-        #the player sprite
+        # the player sprite
         self.player = pygame.image.load("player.png").convert()
+        # bomb sprites
+        self.bomb1 = pygame.image.load("rocket.png")
+        self.bomb2 = pygame.image.load("rocket2.png")
+        self.bombCurrentImage = 1
+        self.bombCount = 10
+        self.bomb = None
+
         pygame.display.set_icon(self.player)
         self.animationOn = 0
         self.direction = 1
@@ -114,6 +121,8 @@ class MahyarSpaceInvaderI:
             self.playerPosY += 5
         if key[K_SPACE] and not self.bullet:
             self.bullet = pygame.Rect(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15, 5, 10)
+        if key[K_b] and not self.bomb and self.bombCount > 0:
+            self.bomb = self.screen.blit(self.bomb1, (self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15))
 
     def bulletUpdate(self):
         for i, enemy in enumerate(self.enemies):
@@ -124,6 +133,7 @@ class MahyarSpaceInvaderI:
                     self.enemies[i].pop(j)
                     self.enemycount -= 1
                     self.bullet = None
+                    self.bomb = None
                     self.chance -= 1
                     self.score += 100
         for x in self.bullets:
@@ -135,7 +145,8 @@ class MahyarSpaceInvaderI:
         if self.bullet:
             self.bullet.y -= 7
             if self.bullet.y < 0:
-                self.enemyBullet = None
+                self.bullet = None
+
         for b in self.barrierParticles:
             check = b.collidelist(self.bullets)
             if check != -1:
@@ -144,10 +155,44 @@ class MahyarSpaceInvaderI:
             elif self.bullet and b.colliderect(self.bullet):
                 self.barrierParticles.remove(b)
                 self.bullet = None
+    def bombUpdate(self):
+        for i, enemy in enumerate(self.enemies):
+            for j, enemy in enumerate(enemy):
+                enemy = enemy[1]
+                # if a bomb hits an enemy you get 100 points
+                if self.bomb and enemy.colliderect(self.bomb):
+                    self.enemies[i].pop(j)
+                    self.enemycount -= 1
+                    self.bomb = None
+                    self.chance -= 1
+                    self.score += 300
+                    self.bombCount -= 1
+        if self.bomb:
+            # speed of bullet
+            self.bomb.y -= 10
+            # if bullets off the screen then remove it
+            if self.bomb.y < 0:
+                self.bomb = None
+        for b in self.barrierParticles:
+            if self.bomb and b.colliderect(self.bomb):
+                self.barrierParticles.remove(b)
+                self.bomb = None
+                self.bombCount -= 1
+
+
+    def bombAnimation(self):
+        if self.bombCurrentImage == 1:
+            self.screen.blit(self.bomb1, (self.bomb.x,self.bomb.y))
+        if self.bombCurrentImage == 2:
+            self.screen.blit(self.bomb2, (self.bomb.x,self.bomb.y))
+        if self.bombCurrentImage == 2:
+            self.bombCurrentImage = 1
+        else:
+            self.bombCurrentImage += 1
 
     def resetPlayer(self):
         self.playerPosX = 400
-        
+
 # ENEMY ---------------------------------------------------------------------------------------------------------------
     def enemyUpdate(self):
         if not self.lastEnemyMove:
@@ -219,7 +264,7 @@ class MahyarSpaceInvaderI:
             elif self.enemyBullet and b.colliderect(self.enemyBullet):
                 self.barrierParticles.remove(b)
                 self.enemyBullet = None
-                
+
 # Text and Buttons -----------------------------------------------------------------------------------------------------
     def text_objects(self, text, font):
         #white font
@@ -382,7 +427,8 @@ class MahyarSpaceInvaderI:
 
 # GameLOOP ------------------------------------------------------------------------------------------------------------
     def run(self):
-
+        bombTimer = 20
+        fpsCount = 0
         clock = pygame.time.Clock()
         for x in range(5):
             self.moveEnemiesDown()
@@ -403,6 +449,10 @@ class MahyarSpaceInvaderI:
             self.screen.blit(self.player, (self.playerPosX, self.playerPosY))
             if self.bullet:
                 pygame.draw.rect(self.screen, (52,255,0), self.bullet)
+
+            if self.bomb:
+                self.bombAnimation()
+
             for Ebullet in self.enemyBullets:
                 pygame.draw.rect(self.screen, (255,255,255), Ebullet)
             for b in self.barrierParticles:
@@ -411,14 +461,24 @@ class MahyarSpaceInvaderI:
             if self.enemycount == 0:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Win!", -1, (52,255,0)), (100,200))
             elif self.lives > 0:
+                self.bombUpdate()
                 self.enemyBulletUpdate()
                 self.bulletUpdate()
                 self.enemyUpdate()
                 self.playerUpdate()
+                if bombTimer == 0:
+                    bombTimer = 20
+                    self.bombCount += 1
+                if fpsCount == 60:
+                    fpsCount = 0
+                    bombTimer -= 1
+                fpsCount += 1
             elif self.lives <= 0:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Lose!", -1, (52,255,0)), (100, 200))
             self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, (255, 255, 255)), (20, 10))
-            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, (255, 255, 255)), (400, 10))
+            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, (255, 255, 255)), (300, 10))
+            self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, (255, 255, 255)), (150, 10))
+            self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, (255, 255, 255)), (550, 10))
             pygame.display.update()
 
 
