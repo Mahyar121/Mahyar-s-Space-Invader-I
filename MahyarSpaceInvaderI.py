@@ -7,7 +7,7 @@ import pygame
 from pygame.locals import *
 import random
 pygame.init()
-from time import sleep
+
 #class for the game Mahyar's Space Invader I
 class MahyarSpaceInvaderI:
     def __init__(self):
@@ -137,10 +137,14 @@ class MahyarSpaceInvaderI:
     #handles the buttons for the player
     def playerUpdate(self):
         key = pygame.key.get_pressed()
-        if key[K_LEFT] and self.playerPosX > 0:
+        if key[K_LEFT] or key[K_a] and self.playerPosX > 0:
             self.playerPosX -= 5
-        elif key[K_RIGHT] and self.playerPosX < self.display_width - self.player.get_width():
+        if (key[K_RIGHT] or key[K_d]) and self.playerPosX < (self.display_width + 60) - self.player.get_width():
             self.playerPosX += 5
+        if (key[K_UP] or key[K_w]) and self.playerPosY > 0:
+            self.playerPosY -= 5
+        if (key[K_DOWN] or key[K_s]) and self.playerPosY < (self.display_height + 60) - self.player.get_height():
+            self.playerPosY += 5
         if key[K_SPACE] and not self.bullet:
             self.bullet = pygame.Rect(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15, 5, 10)
 
@@ -282,29 +286,45 @@ class MahyarSpaceInvaderI:
         self.textButton("Back",80,545,260,40)
         # Control BUTTONS
         # Move Left
-        self.buttonBorder(self.red,75,150,270,50)
-        self.buttonBorder(self.teal,80,155,260,40)
-        self.textButton("Move Left:",80,155,260,40)
+        self.buttonBorder(self.red,75,150,290,50)
+        self.buttonBorder(self.teal,80,155,280,40)
+        self.textButton("Move Left:",80,155,280,40)
         # left arrow
-        self.buttonBorder(self.red, 475, 150, 270, 50)
-        self.buttonBorder(self.teal, 480, 155, 260, 40)
-        self.textButton("Left Arrow", 480, 155, 260, 40)
+        self.buttonBorder(self.red, 475, 150, 290, 50)
+        self.buttonBorder(self.teal, 480, 155, 280, 40)
+        self.textButton("Left Arrow or A", 480, 155, 280, 40)
         # Move Right
-        self.buttonBorder(self.red, 75, 250, 270, 50)
-        self.buttonBorder(self.teal, 80, 255, 260, 40)
-        self.textButton("Move Right:", 80, 255, 260, 40)
+        self.buttonBorder(self.red, 75, 220, 290, 50)
+        self.buttonBorder(self.teal, 80, 225, 280, 40)
+        self.textButton("Move Right:", 80, 225, 280, 40)
         # right arrow
-        self.buttonBorder(self.red, 475, 250, 270, 50)
-        self.buttonBorder(self.teal, 480, 255, 260, 40)
-        self.textButton("Right Arrow", 480, 255, 260, 40)
+        self.buttonBorder(self.red, 475, 220, 290, 50)
+        self.buttonBorder(self.teal, 480, 225, 280, 40)
+        self.textButton("Right Arrow or D", 480, 225, 280, 40)
+        # Move Up
+        self.buttonBorder(self.red, 75, 290, 290, 50)
+        self.buttonBorder(self.teal, 80, 295, 280, 40)
+        self.textButton("Move Up:", 80, 295, 280, 40)
+        # up arrow
+        self.buttonBorder(self.red, 475, 290, 290, 50)
+        self.buttonBorder(self.teal, 480, 295, 280, 40)
+        self.textButton("Up Arrow or W", 480, 295, 280, 40)
+        # Move Down
+        self.buttonBorder(self.red, 75, 360, 290, 50)
+        self.buttonBorder(self.teal, 80, 365, 280, 40)
+        self.textButton("Move Down:", 80, 365, 280, 40)
+        # down arrow
+        self.buttonBorder(self.red, 475, 360, 290, 50)
+        self.buttonBorder(self.teal, 480, 365, 280, 40)
+        self.textButton("Down Arrow or S", 480, 365, 280, 40)
         # Attack
-        self.buttonBorder(self.red, 75, 350, 270, 50)
-        self.buttonBorder(self.teal, 80, 355, 260, 40)
-        self.textButton("Attack:", 80, 355, 260, 40)
+        self.buttonBorder(self.red, 75, 430, 290, 50)
+        self.buttonBorder(self.teal, 80, 435, 280, 40)
+        self.textButton("Attack:", 80, 435, 280, 40)
         # Space Bar
-        self.buttonBorder(self.red, 475, 350, 270, 50)
-        self.buttonBorder(self.teal, 480, 355, 260, 40)
-        self.textButton("SpaceBar", 480, 355, 260, 40)
+        self.buttonBorder(self.red, 475, 430, 290, 50)
+        self.buttonBorder(self.teal, 480, 435, 280, 40)
+        self.textButton("SpaceBar", 480, 435, 280, 40)
 
     def controlsPage(self):
         controls = True
