@@ -339,67 +339,75 @@ class MahyarSpaceInvaderI:
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         #quit button
-        if 475 + 260 > mouse[0] > 475 and 545 + 40 > mouse[1] > 545:
-            self.buttonBorder(self.white,470,540,270,50)
-            self.buttonBorder(self.brightGreen,475,545,260,40)
+        if 480 + 260 > mouse[0] > 480 and 545 + 40 > mouse[1] > 545:
+            self.buttonBorder(self.white,475,540,290,50)
+            self.buttonBorder(self.brightGreen,480,545,280,40)
             if click[0] == 1:
                 pygame.quit()
                 quit()
         else:
-            self.buttonBorder(self.white, 470, 540, 270, 50)
-            self.buttonBorder(self.green, 475, 545, 260, 40)
-        self.textButton("Quit",475,545,260,40)
+            self.buttonBorder(self.white, 475, 540, 290, 50)
+            self.buttonBorder(self.green, 480, 545, 280, 40)
+        self.textButton("Quit",480,545,280,40)
         #back button
         if 80 + 260 > mouse[0] > 80 and 545 + 40 > mouse[1] > 545:
-            self.buttonBorder(self.white, 75, 540, 270, 50)
-            self.buttonBorder(self.brightGreen, 80, 545, 260, 40)
+            self.buttonBorder(self.white, 75, 540, 290, 50)
+            self.buttonBorder(self.brightGreen, 80, 545, 280, 40)
             if click[0] == 1:
                 self.game_intro()
         else:
-            self.buttonBorder(self.white, 75, 540, 270, 50)
-            self.buttonBorder(self.green, 80, 545, 260, 40)
-        self.textButton("Back",80,545,260,40)
+            self.buttonBorder(self.white, 75, 540, 290, 50)
+            self.buttonBorder(self.green, 80, 545, 280, 40)
+        self.textButton("Back",80,545,280,40)
         # Control BUTTONS
         # Move Left
-        self.buttonBorder(self.red,75,150,290,50)
-        self.buttonBorder(self.teal,80,155,280,40)
-        self.textButton("Move Left:",80,155,280,40)
+        self.buttonBorder(self.red,75,125,290,50)
+        self.buttonBorder(self.teal,80,130,280,40)
+        self.textButton("Move Left:",80,130,280,40)
         # left arrow
-        self.buttonBorder(self.red, 475, 150, 290, 50)
-        self.buttonBorder(self.teal, 480, 155, 280, 40)
-        self.textButton("Left Arrow or A", 480, 155, 280, 40)
+        self.buttonBorder(self.red, 475, 125, 290, 50)
+        self.buttonBorder(self.teal, 480, 130, 280, 40)
+        self.textButton("Left Arrow or A", 480, 130, 280, 40)
         # Move Right
-        self.buttonBorder(self.red, 75, 220, 290, 50)
-        self.buttonBorder(self.teal, 80, 225, 280, 40)
-        self.textButton("Move Right:", 80, 225, 280, 40)
+        self.buttonBorder(self.red, 75, 195, 290, 50)
+        self.buttonBorder(self.teal, 80, 200, 280, 40)
+        self.textButton("Move Right:", 80, 200, 280, 40)
         # right arrow
-        self.buttonBorder(self.red, 475, 220, 290, 50)
-        self.buttonBorder(self.teal, 480, 225, 280, 40)
-        self.textButton("Right Arrow or D", 480, 225, 280, 40)
+        self.buttonBorder(self.red, 475, 195, 290, 50)
+        self.buttonBorder(self.teal, 480, 200, 280, 40)
+        self.textButton("Right Arrow or D", 480, 200, 280, 40)
         # Move Up
-        self.buttonBorder(self.red, 75, 290, 290, 50)
-        self.buttonBorder(self.teal, 80, 295, 280, 40)
-        self.textButton("Move Up:", 80, 295, 280, 40)
+        self.buttonBorder(self.red, 75, 265, 290, 50)
+        self.buttonBorder(self.teal, 80, 270, 280, 40)
+        self.textButton("Move Up:", 80, 270, 280, 40)
         # up arrow
-        self.buttonBorder(self.red, 475, 290, 290, 50)
-        self.buttonBorder(self.teal, 480, 295, 280, 40)
-        self.textButton("Up Arrow or W", 480, 295, 280, 40)
+        self.buttonBorder(self.red, 475, 265, 290, 50)
+        self.buttonBorder(self.teal, 480, 270, 280, 40)
+        self.textButton("Up Arrow or W", 480, 270, 280, 40)
         # Move Down
-        self.buttonBorder(self.red, 75, 360, 290, 50)
-        self.buttonBorder(self.teal, 80, 365, 280, 40)
-        self.textButton("Move Down:", 80, 365, 280, 40)
+        self.buttonBorder(self.red, 75, 335, 290, 50)
+        self.buttonBorder(self.teal, 80, 340, 280, 40)
+        self.textButton("Move Down:", 80, 340, 280, 40)
         # down arrow
-        self.buttonBorder(self.red, 475, 360, 290, 50)
-        self.buttonBorder(self.teal, 480, 365, 280, 40)
-        self.textButton("Down Arrow or S", 480, 365, 280, 40)
-        # Attack
-        self.buttonBorder(self.red, 75, 430, 290, 50)
-        self.buttonBorder(self.teal, 80, 435, 280, 40)
-        self.textButton("Attack:", 80, 435, 280, 40)
+        self.buttonBorder(self.red, 475, 335, 290, 50)
+        self.buttonBorder(self.teal, 480, 340, 280, 40)
+        self.textButton("Down Arrow or S", 480, 340, 280, 40)
+        # Shoot
+        self.buttonBorder(self.red, 75, 405, 290, 50)
+        self.buttonBorder(self.teal, 80, 410, 280, 40)
+        self.textButton("Shoot:", 80, 410, 280, 40)
         # Space Bar
-        self.buttonBorder(self.red, 475, 430, 290, 50)
-        self.buttonBorder(self.teal, 480, 435, 280, 40)
-        self.textButton("SpaceBar", 480, 435, 280, 40)
+        self.buttonBorder(self.red, 475, 405, 290, 50)
+        self.buttonBorder(self.teal, 480, 410, 280, 40)
+        self.textButton("SpaceBar", 480, 410, 280, 40)
+        # Bomb
+        self.buttonBorder(self.red, 75, 475, 290, 50)
+        self.buttonBorder(self.teal, 80, 480, 280, 40)
+        self.textButton("Bomb:", 80, 480, 280, 40)
+        # B
+        self.buttonBorder(self.red, 475, 475, 290, 50)
+        self.buttonBorder(self.teal, 480, 480, 280, 40)
+        self.textButton("B", 480, 480, 280, 40)
 
     def controlsPage(self):
         controls = True
