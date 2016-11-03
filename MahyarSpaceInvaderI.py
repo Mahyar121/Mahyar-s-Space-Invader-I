@@ -260,7 +260,7 @@ class MahyarSpaceInvaderI:
                     self.bombCount -= 1
         if self.bomb:
             # speed of bullet
-            self.bomb.y -= 10
+            self.bomb.y -= 15
             # if bullets off the screen then remove it
             if self.bomb.y < 0:
                 self.bomb = None
