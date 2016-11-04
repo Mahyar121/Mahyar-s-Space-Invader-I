@@ -593,26 +593,26 @@ class MahyarSpaceInvaderI:
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
             # quit button
-            if 480 + 260 > mouse[0] > 480 and 545 + 40 > mouse[1] > 545:
-                self.buttonBorder(self.white, 475, 540, 290, 50)
-                self.buttonBorder(self.brightGreen, 480, 545, 280, 40)
+            if 505 + 260 > mouse[0] > 505 and 545 + 40 > mouse[1] > 545:
+                self.buttonBorder(self.white, 500, 540, 290, 50)
+                self.buttonBorder(self.brightGreen, 505, 545, 280, 40)
                 if click[0] == 1:
                     pygame.quit()
                     quit()
             else:
-                self.buttonBorder(self.white, 475, 540, 290, 50)
-                self.buttonBorder(self.green, 480, 545, 280, 40)
-            self.textButton("Quit", 480, 545, 280, 40)
+                self.buttonBorder(self.white, 500, 540, 290, 50)
+                self.buttonBorder(self.green, 505, 545, 280, 40)
+            self.textButton("Quit", 505, 545, 280, 40)
             # back button
-            if 80 + 260 > mouse[0] > 80 and 545 + 40 > mouse[1] > 545:
-                self.buttonBorder(self.white, 75, 540, 290, 50)
-                self.buttonBorder(self.brightGreen, 80, 545, 280, 40)
+            if 25 + 260 > mouse[0] > 25 and 545 + 40 > mouse[1] > 545:
+                self.buttonBorder(self.white, 20, 540, 290, 50)
+                self.buttonBorder(self.brightGreen, 25, 545, 280, 40)
                 if click[0] == 1:
                     self.game_intro()
             else:
-                self.buttonBorder(self.white, 75, 540, 290, 50)
-                self.buttonBorder(self.green, 80, 545, 280, 40)
-            self.textButton("Back", 80, 545, 280, 40)
+                self.buttonBorder(self.white, 20, 540, 290, 50)
+                self.buttonBorder(self.green, 25, 545, 280, 40)
+            self.textButton("Back", 25, 545, 280, 40)
             pygame.display.update()
 
 
