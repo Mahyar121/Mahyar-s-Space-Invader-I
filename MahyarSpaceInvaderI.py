@@ -91,23 +91,8 @@ class MahyarSpaceInvaderI:
         self.enemies = []
         self.barrierParticles = []
         self.enemycount = 50
-        self.enemiesCopy = []
-        startY = 50
-        startX = 50
 
-        #positioning the enemy sprites in the rows
-        for rows in range(5):
-            out = []
-            if rows < 1:
-                enemy = 2
-            elif rows < 3:
-                enemy = 1
-            else:
-                enemy = 0
-            for columns in range(10):
-                out.append((enemy,pygame.Rect(startX * columns, startY * rows, 35, 35)))
-            self.enemies.append(out)
-            self.enemiesCopy.append(out)
+
         self.chance = 990
 
         barrierX = 50
@@ -179,23 +164,8 @@ class MahyarSpaceInvaderI:
         self.enemies = []
         self.barrierParticles = []
         self.enemycount = 50
-        self.enemiesCopy = []
-        startY = 50
-        startX = 50
 
-        # positioning the enemy sprites in the rows
-        for rows in range(5):
-            out = []
-            if rows < 1:
-                enemy = 2
-            elif rows < 3:
-                enemy = 1
-            else:
-                enemy = 0
-            for columns in range(10):
-                out.append((enemy, pygame.Rect(startX * columns, startY * rows, 35, 35)))
-            self.enemies.append(out)
-            self.enemiesCopy.append(out)
+
         self.chance = 990
 
         barrierX = 50
@@ -260,6 +230,7 @@ class MahyarSpaceInvaderI:
             elif self.bullet and b.colliderect(self.bullet):
                 self.barrierParticles.remove(b)
                 self.bullet = None
+                self.score -= 100
     def bombUpdate(self):
         for i, enemy in enumerate(self.enemies):
             for j, enemy in enumerate(enemy):
@@ -270,7 +241,6 @@ class MahyarSpaceInvaderI:
                     self.enemycount -= 1
                     self.bomb = None
                     self.chance -= 1
-                    self.score += 300
                     self.bombCount -= 1
         if self.bomb:
             # speed of bullet
@@ -283,6 +253,7 @@ class MahyarSpaceInvaderI:
                 self.barrierParticles.remove(b)
                 self.bomb = None
                 self.bombCount -= 1
+                self.score -= 100
 
 
     def bombAnimation(self):
@@ -299,6 +270,23 @@ class MahyarSpaceInvaderI:
         self.playerPosX = 400
 
 # ENEMY ---------------------------------------------------------------------------------------------------------------
+    def enemyCreate(self):
+        startY = 50
+        startX = 50
+
+        # positioning the enemy sprites in the rows
+        for rows in range(5):
+            out = []
+            if rows < 1:
+                enemy = 2
+            elif rows < 3:
+                enemy = 1
+            else:
+                enemy = 0
+            for columns in range(10):
+                out.append((enemy, pygame.Rect(startX * columns, startY * rows, 35 , 35)))
+            self.enemies.append(out)
+
     def enemyUpdate(self):
         if not self.lastEnemyMove:
             for enemy in self.enemies:
@@ -336,16 +324,7 @@ class MahyarSpaceInvaderI:
                 enemy.y += 20
 
     def enemyBulletUpdate(self):
-        for i, enemy in enumerate(self.enemies):
-            for j, enemy in enumerate(enemy):
-                enemy = enemy[1]
-                #if a bullet hits an enemy you get 100 points
-                if self.bullet and enemy.colliderect(self.bullet):
-                    self.enemies[i].pop(j)
-                    self.enemycount -= 1
-                    self.bullet = None
-                    self.chance -= 1
-                    self.score += 100
+
         if self.enemyBullet:
             self.enemyBullet.y -= 7
             if self.enemeyBullet.y < 0:
@@ -373,7 +352,7 @@ class MahyarSpaceInvaderI:
 # Text and Buttons -----------------------------------------------------------------------------------------------------
     def text_objects(self, text, font):
         #white font
-        textSurface = font.render(text, True, (255,255,255))
+        textSurface = font.render(text, True, self.white)
         return textSurface, textSurface.get_rect()
 
     def buttonBorder(self, color, x, y, w, h):
@@ -739,6 +718,7 @@ class MahyarSpaceInvaderI:
             self.moveEnemiesDown()
         gameExit = False
         FPS = 60
+        self.enemyCreate()
         while not gameExit:
 
             clock.tick(FPS)
@@ -749,7 +729,7 @@ class MahyarSpaceInvaderI:
                     quit()
             for enemy in self.enemies:
                 for enemy in enemy: #drawing the enemy and scaling the enemy
-                    self.screen.blit(pygame.transform.scale(self.enemySprites[enemy[0]][self.animationOn], (35,35)), (enemy[1].x, enemy[1].y))
+                    self.screen.blit(pygame.transform.scale(self.enemySprites[enemy[0]][self.animationOn], (35,35)), (enemy[1].x, enemy[1].y + 40))
             #drawing the player
             self.screen.blit(self.player, (self.playerPosX, self.playerPosY))
             if self.bullet:
@@ -759,7 +739,7 @@ class MahyarSpaceInvaderI:
                 self.bombAnimation()
 
             for Ebullet in self.enemyBullets:
-                pygame.draw.rect(self.screen, (255,255,255), Ebullet)
+                pygame.draw.rect(self.screen, self.white, Ebullet)
             for b in self.barrierParticles:
                 pygame.draw.rect(self.screen, (100,255,100), b)
 
@@ -826,7 +806,5 @@ if __name__ == "__main__":
     MahyarSpaceInvaderI().run()
     pygame.quit()
     quit()
-
-
 
 
