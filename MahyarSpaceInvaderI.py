@@ -769,6 +769,11 @@ class MahyarSpaceInvaderI:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("P", -1, self.teal), (160, 200))
                 self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Press    to go to MainMenu", -1, self.brightGreen),(50, 250))
                 self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("M", -1, self.teal), (160, 250))
+                if highscoreCount == 1:
+                    self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Enter your name for the HighScore List", -1, self.brightGreen),(10, 450))
+                    self.getUserName()
+                    self.addHighScores()
+                    highscoreCount = 0
                 key = pygame.key.get_pressed()
                 if key[K_p]:
                     self.playAgain()
@@ -807,10 +812,10 @@ class MahyarSpaceInvaderI:
                 if key[K_m]:
                     self.playAgain()
                     self.game_intro()
-            self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, self.white), (20, 10))
-            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, self.white), (300, 10))
-            self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, self.white), (150, 10))
-            self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, self.white), (550, 10))
+            self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, self.white), (0, 10))
+            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, self.white), (450, 10))
+            self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, self.white), (100, 10))
+            self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, self.white), (620, 10))
             pygame.display.update()
 
 
