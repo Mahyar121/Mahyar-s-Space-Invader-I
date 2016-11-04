@@ -424,7 +424,7 @@ class MahyarSpaceInvaderI:
             self.buttonBorder(self.white, 270, 200, 270, 60)
             self.buttonBorder(self.brightGreen, 275, 205, 260, 50)
             if click[0] == 1:
-                self.controlsPage()
+                self.tutorialPage()
         else:
             self.buttonBorder(self.white, 270, 200, 270, 60)
             self.buttonBorder(self.green, 275, 205, 260, 50)
@@ -668,8 +668,68 @@ class MahyarSpaceInvaderI:
                     quit()
             self.screen.blit(pygame.font.Font("game_font.ttf", 50).render(self.userName, -1, self.white), (100, 500))
             pygame.display.update()
+# Tutorial Page -------------------------------------------------------------------------------------------------------
+    def tutorialPage(self):
+        bombTimer = 20
+        fpsCount = 0
+        key = pygame.key.get_pressed()
+        clock = pygame.time.Clock()
+        FPS = 60
+        tutorialExit = False
+        while not tutorialExit:
+            clock.tick(FPS)
+            self.screen.fill(self.black)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            for b in self.barrierParticles:
+                pygame.draw.rect(self.screen, (100, 255, 100), b)
+            self.screen.blit(pygame.font.Font("game_font.ttf", 23).render("Type q to exit tutorial", -1, self.brightGreen),(222, 10))
+            self.screen.blit(self.player, (self.playerPosX, self.playerPosY))
+            key = pygame.key.get_pressed()
+            if key[K_LEFT] or key[K_a] and self.playerPosX > 0:
+                self.playerPosX -= 5
+            if (key[K_RIGHT] or key[K_d]) and self.playerPosX < (self.display_width + 60) - self.player.get_width():
+                self.playerPosX += 5
+            if (key[K_UP] or key[K_w]) and self.playerPosY > 0:
+                self.playerPosY -= 5
+            if (key[K_DOWN] or key[K_s]) and self.playerPosY < (self.display_height + 60) - self.player.get_height():
+                self.playerPosY += 5
+            if key[K_SPACE] and not self.bullet:
+                self.bullet = pygame.Rect(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15, 5, 10)
+            if key[K_b] and not self.bomb and self.bombCount > 0:
+                self.bomb = self.screen.blit(self.bomb1,(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15))
+            if key[K_q]:
+                self.playAgain()
+                self.game_intro()
 
-# GameLOOP ------------------------------------------------------------------------------------------------------------
+            if bombTimer == 0:
+                bombTimer = 20
+                self.bombCount += 1
+            if fpsCount == 60:
+                fpsCount = 0
+                bombTimer -= 1
+            fpsCount += 1
+            if self.bullet:
+                pygame.draw.rect(self.screen, (52,255,0), self.bullet)
+            if self.bomb:
+                self.bombAnimation()
+            self.bombUpdate()
+            self.bulletUpdate()
+            self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, self.white), (0, 10))
+            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, self.white), (450, 10))
+            self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, self.white), (100, 10))
+            self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, self.white), (620, 10))
+            pygame.display.update()
+
+
+
+
+
+
+
+            # GameLOOP ------------------------------------------------------------------------------------------------------------
     def run(self):
         highscoreCount = 1
         bombTimer = 20
