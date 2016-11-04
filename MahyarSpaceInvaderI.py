@@ -27,6 +27,8 @@ class MahyarSpaceInvaderI:
         self.red = (255, 0, 0)
         self.yellow = (255,252,124)
         self.black = (0,0,0)
+        self.orange = (255, 165, 0)
+        self.lightPurple = (216,191,216)
 
         # if there is no file then make one
         if not os.path.isfile(self.fileName):
@@ -651,10 +653,22 @@ class MahyarSpaceInvaderI:
     def tutorialPage(self):
         bombTimer = 20
         fpsCount = 0
+        seconds = 5
+        mainmenuSeconds = 0
         key = pygame.key.get_pressed()
         clock = pygame.time.Clock()
+        tutorialCount = 0
+        tutorialFPScount = 0
         FPS = 60
+        left = False
+        right = False
+        up = False
+        down = False
+        fire = False
+        bomb = False
         tutorialExit = False
+        bigFont = pygame.font.Font("game_font.ttf", 40)
+        medFont = pygame.font.Font("game_font.ttf", 30)
         while not tutorialExit:
             clock.tick(FPS)
             self.screen.fill(self.black)
@@ -669,19 +683,67 @@ class MahyarSpaceInvaderI:
             key = pygame.key.get_pressed()
             if key[K_LEFT] or key[K_a] and self.playerPosX > 0:
                 self.playerPosX -= 5
-            if (key[K_RIGHT] or key[K_d]) and self.playerPosX < (self.display_width + 60) - self.player.get_width():
+                left = True
+            if (key[K_RIGHT] or key[K_d]) and self.playerPosX < self.display_width - self.player.get_width() and left :
                 self.playerPosX += 5
-            if (key[K_UP] or key[K_w]) and self.playerPosY > 0:
+                right = True
+            if (key[K_UP] or key[K_w]) and left and right and self.playerPosY > 0:
                 self.playerPosY -= 5
-            if (key[K_DOWN] or key[K_s]) and self.playerPosY < (self.display_height + 60) - self.player.get_height():
+                up = True
+            if (key[K_DOWN] or key[K_s]) and left and right and up and self.playerPosY < self.display_height - self.player.get_height():
                 self.playerPosY += 5
-            if key[K_SPACE] and not self.bullet:
+                down = True
+            if key[K_SPACE]  and left and right and up and down and not self.bullet:
+                fire = True
                 self.bullet = pygame.Rect(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15, 5, 10)
-            if key[K_b] and not self.bomb and self.bombCount > 0:
+            if key[K_b] and left and right and up and down and fire and not self.bomb and self.bombCount > 0:
+                bomb = True
                 self.bomb = self.screen.blit(self.bomb1,(self.playerPosX + self.player.get_width() / 4, self.playerPosY - 15))
             if key[K_q]:
                 self.playAgain()
                 self.game_intro()
+
+            if not left:
+                self.screen.blit(bigFont.render("Press A or Left Arrow to move left", -1, self.red), (10, 40))
+            if left and not right and not up and not down and not fire and not bomb:
+                self.screen.blit(bigFont.render("Press D or Right Arrow to move right", -1, self.teal), (10, 40))
+            if left and right and not up and not down and not fire and not bomb:
+                self.screen.blit(bigFont.render("Press W or Up Arrow to move up", -1, self.brightGreen), (10, 40))
+            if left and right and up and not down and not fire and not bomb:
+                self.screen.blit(bigFont.render("Press S or Down Arrow to move down", -1, self.yellow), (10, 40))
+            if left and right and up and down and not fire and not bomb:
+                self.screen.blit(bigFont.render("Press Spacebar to fire", -1, self.orange), (10, 40))
+            if left and right and up and down and fire and not bomb:
+                self.screen.blit(bigFont.render("Press B to release a bomb", -1, self.lightPurple), (10, 40))
+            if left and right and up and down and fire and bomb and tutorialCount == 0:
+                self.screen.blit(bigFont.render("Remember you have a limited amount of bombs", -1, self.brightGreen), (0, 40))
+                self.screen.blit(bigFont.render("If the bomb timer equals 0 you get a new bomb", -1, self.red),(5, 80))
+                self.screen.blit(bigFont.render("Bombs give 0 points if it kills a target", -1, self.brightGreen),(15, 120))
+                tutorialFPScount += 1
+                if tutorialFPScount == 700:
+                    tutorialCount += 1
+            if tutorialCount == 1:
+                self.screen.blit(bigFont.render("You lose 100 points if you shoot at the barrier", -1, self.teal), (10, 40))
+                self.screen.blit(bigFont.render("Use your bombs for emergency situations", -1, self.orange), (20, 80))
+                tutorialFPScount += 1
+                if tutorialFPScount == 1400:
+                    tutorialCount += 1
+            if tutorialCount == 2:
+                self.screen.blit(bigFont.render("You will lose if your lives goes down to 0", -1, self.yellow),(10, 40))
+                self.screen.blit(bigFont.render("You will win if you kill all the enemies", -1, self.red), (10, 80))
+                tutorialFPScount += 1
+                if tutorialFPScount == 1900:
+                    tutorialCount += 1
+            if tutorialCount == 3:
+                self.screen.blit(bigFont.render("You have completed the Tutorial!", -1, self.teal),(10, 40))
+                self.screen.blit(bigFont.render("Returning to MainMenu in {}".format(seconds), -1, self.lightPurple), (10, 80))
+                mainmenuSeconds += 1
+                if mainmenuSeconds == 70:
+                    mainmenuSeconds = 0
+                    seconds -= 1
+                if seconds == 0:
+                    self.playAgain()
+                    self.game_intro()
 
             if bombTimer == 0:
                 bombTimer = 20
