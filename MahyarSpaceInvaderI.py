@@ -6,12 +6,18 @@ game page
 import pygame
 from pygame.locals import *
 import random
+import os
+import json
+
 pygame.init()
 
 #class for the game Mahyar's Space Invader I
 class MahyarSpaceInvaderI:
     def __init__(self):
+        self.fileName = "HighScore.json"
         self.score = 0
+        self.userName = ""
+        self.highScoreList = []
         self.lives = 3
         self.smallText = pygame.font.Font("game_font.ttf", 40)
         self.white = (255,255,255)
@@ -20,6 +26,14 @@ class MahyarSpaceInvaderI:
         self.brightGreen = (0, 255, 0)
         self.red = (255, 0, 0)
         self.yellow = (255,252,124)
+        self.black = (0,0,0)
+
+        # if there is no file then make one
+        if not os.path.isfile(self.fileName):
+            empty_score_file = open(self.fileName, "w")
+            empty_score_file.write("[]")
+            empty_score_file.close()
+
         #setting up the font for the game
         pygame.font.init()
         self.font = pygame.font.Font("game_font.ttf", 25)
@@ -115,7 +129,7 @@ class MahyarSpaceInvaderI:
 
         self.score = 0
         self.lives = 3
-
+        self.userName = ""
         # the 1 is the colored portion of the barrier
         barrierDesign = [[], [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
                          [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
@@ -390,7 +404,7 @@ class MahyarSpaceInvaderI:
             self.buttonBorder(self.white, 270, 400, 270, 60)
             self.buttonBorder(self.brightGreen, 275, 405, 260, 50)
             if click[0] == 1:
-                self.controlsPage()
+                self.highScoresPage()
         else:
             self.buttonBorder(self.white, 270, 400, 270, 60)
             self.buttonBorder(self.green, 275, 405, 260, 50)
@@ -528,7 +542,7 @@ class MahyarSpaceInvaderI:
                     pygame.quit()
                     quit()
             # black screen
-            self.screen.fill((0, 0, 0))
+            self.screen.fill(self.black)
             bigText = pygame.font.Font("game_font.ttf", 60)
             textSurface, textRectange = self.text_objects("Mahyar's Space Invader I", bigText)
             textRectange.center = ((self.display_width / 2), (self.display_height / 15))
@@ -544,9 +558,120 @@ class MahyarSpaceInvaderI:
             clock = pygame.time.Clock()
             clock.tick(15)
 
+# HighScores ----------------------------------------------------------------------------------------------------------
+    def highScoresPage(self):
+        padding_y = 0
+        maxScores = 8  # We *could* paint every score, but it's not any good if you can't see them (because we run out of the screen).
+        scoresCount = 1
+        highScore = True
+        self.screen.fill(self.black)
+        with open(self.fileName) as highscore_file:
+           self.highScoreList = json.load(highscore_file)
+        while highScore:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+            for score in self.highScoreList:
+                if scoresCount <= maxScores and scoresCount <= len(self.highScoreList):
+                    self.screen.blit(
+                        pygame.font.Font("game_font.ttf", 50).render(str(scoresCount) + ".  " + str(score["name"]) + ": " + str(score["score"]), 1,
+                                         self.white), (250, 140 + padding_y))
+                    padding_y += 50
+                    scoresCount += 1
+
+            bigText = pygame.font.Font("game_font.ttf", 60)
+            textSurface, textRectange = self.text_objects("Mahyar's Space Invader I", bigText)
+            textRectange.center = ((self.display_width / 2), (self.display_height / 15))
+            self.screen.blit(textSurface, textRectange)
+
+            line = "_____________________________________________________________________"
+            self.screen.blit(pygame.font.Font("game_font.ttf", 50).render(line, -1, self.green), (0, 80))
+            self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("High Scores", -1, self.brightGreen), (270, 70))
+
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
+            # quit button
+            if 480 + 260 > mouse[0] > 480 and 545 + 40 > mouse[1] > 545:
+                self.buttonBorder(self.white, 475, 540, 290, 50)
+                self.buttonBorder(self.brightGreen, 480, 545, 280, 40)
+                if click[0] == 1:
+                    pygame.quit()
+                    quit()
+            else:
+                self.buttonBorder(self.white, 475, 540, 290, 50)
+                self.buttonBorder(self.green, 480, 545, 280, 40)
+            self.textButton("Quit", 480, 545, 280, 40)
+            # back button
+            if 80 + 260 > mouse[0] > 80 and 545 + 40 > mouse[1] > 545:
+                self.buttonBorder(self.white, 75, 540, 290, 50)
+                self.buttonBorder(self.brightGreen, 80, 545, 280, 40)
+                if click[0] == 1:
+                    self.game_intro()
+            else:
+                self.buttonBorder(self.white, 75, 540, 290, 50)
+                self.buttonBorder(self.green, 80, 545, 280, 40)
+            self.textButton("Back", 80, 545, 280, 40)
+            pygame.display.update()
+
+
+
+    def addHighScores(self):
+        with open(self.fileName) as highscore_file:
+            self.highScoreList = json.load(highscore_file)
+
+        if not self.highScoreList == None: # Make sure the prev. scores are loaded.
+            new_json_score = { # Create a JSON-object with the score, name
+                    "name":self.userName,
+                    "score":self.score,
+                    }
+            self.highScoreList.append(new_json_score) # Add the score to the list of scores.
+
+            self.highScoreList = self.sortHighScores(self.highScoreList) # Sort the scores.
+
+            highscore_file = open(self.fileName, "w")
+            highscore_file.write(json.dumps(self.highScoreList)) # Save the list of scores to highscore.json
+
+
+    def sortHighScores(self, json):
+        scores_dict = dict()  # Create a dictionary object.
+        sorted_list = list()  # Create a list object.
+
+        for obj in json:
+            scores_dict[
+                # Add every score to a dictionary with its score as key.
+                obj["score"]] = obj
+
+        for key in sorted(scores_dict.keys(),
+                          reverse=True):  # Read the sorted dictionary in reverse order (highest score first)...
+            sorted_list.append(scores_dict[key])  # ...and add it to a list.
+
+        return sorted_list  # Tada! Returns a sorted list.
+
+
+
+    def getUserName(self):
+        loop = True
+        while loop:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.unicode.isalpha():
+                        self.userName += event.unicode
+                    elif event.key == K_BACKSPACE:
+                        self.userName = self.userName[:-1]
+                    elif event.key == K_RETURN:
+                        self.addHighScores()
+                        loop = False
+                elif event.type == QUIT:
+                    pygame.quit()
+                    quit()
+            self.screen.blit(pygame.font.Font("game_font.ttf", 50).render(self.userName, -1, self.white), (100, 500))
+            pygame.display.update()
+
 # GameLOOP ------------------------------------------------------------------------------------------------------------
     def run(self):
-
+        highscoreCount = 1
         bombTimer = 20
         fpsCount = 0
         clock = pygame.time.Clock()
@@ -557,7 +682,7 @@ class MahyarSpaceInvaderI:
         while not gameExit:
 
             clock.tick(FPS)
-            self.screen.fill((0,0,0))
+            self.screen.fill(self.black)
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -610,6 +735,11 @@ class MahyarSpaceInvaderI:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("P", -1, self.teal),(160, 200))
                 self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Press    to go to MainMenu", -1, self.brightGreen),(50,250))
                 self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("M", -1, self.teal), (160, 250))
+                if highscoreCount == 1:
+                    self.screen.blit(pygame.font.Font("game_font.ttf", 50).render("Enter your name for the HighScore List", -1, self.brightGreen),(10, 450))
+                    self.getUserName()
+                    self.addHighScores()
+                    highscoreCount = 0
                 key = pygame.key.get_pressed()
                 if key[K_p]:
                     self.playAgain()
@@ -617,10 +747,10 @@ class MahyarSpaceInvaderI:
                 if key[K_m]:
                     self.playAgain()
                     self.game_intro()
-            self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, (255, 255, 255)), (20, 10))
-            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, (255, 255, 255)), (300, 10))
-            self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, (255, 255, 255)), (150, 10))
-            self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, (255, 255, 255)), (550, 10))
+            self.screen.blit(self.font.render("Lives: {}".format(self.lives), -1, self.white), (20, 10))
+            self.screen.blit(self.font.render("Score: {}".format(self.score), -1, self.white), (300, 10))
+            self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, self.white), (150, 10))
+            self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, self.white), (550, 10))
             pygame.display.update()
 
 
