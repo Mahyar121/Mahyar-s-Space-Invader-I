@@ -16,19 +16,24 @@ class MahyarSpaceInvaderI:
     def __init__(self):
         self.fileName = "HighScore.json"
         self.score = 0
+        self.hard = False
+        self.beginner = False
         self.userName = ""
         self.highScoreList = []
         self.lives = 3
         self.smallText = pygame.font.Font("game_font.ttf", 40)
-        self.white = (255,255,255)
+        self.white = (255, 255, 255)
+        self.blue = (0, 0, 255)
         self.teal = (0, 200, 255)
         self.green = (0, 200, 0)
         self.brightGreen = (0, 255, 0)
+        self.pink = (240, 108, 227)
         self.red = (255, 0, 0)
-        self.yellow = (255,252,124)
-        self.black = (0,0,0)
-        self.orange = (255, 165, 0)
-        self.lightPurple = (216,191,216)
+        self.yellow = (255, 252, 124)
+        self.black = (0, 0, 0)
+        self.orange = (255, 125, 0)
+        self.brightOrange = (255, 190, 0)
+        self.lightPurple = (216, 191, 216)
 
         # if there is no file then make one
         if not os.path.isfile(self.fileName):
@@ -73,11 +78,30 @@ class MahyarSpaceInvaderI:
         # the player sprite
         self.player = pygame.image.load("player.png").convert()
         # bomb sprites
-        self.bomb1 = pygame.image.load("rocket.png")
-        self.bomb2 = pygame.image.load("rocket2.png")
+        self.bomb1 = pygame.image.load("rocket.png").convert()
+        self.bomb2 = pygame.image.load("rocket2.png").convert()
         self.bombCurrentImage = 1
         self.bombCount = 10
         self.bomb = None
+
+        # the boss sprite
+        self.levelOneBoss = pygame.image.load("level1boss.png").convert()
+        self.levelOneBossX = 200
+        self.levelOneBossY = 10
+        self.levelOneBossLastMove = 0
+        self.levelOneBossSpeed = 10
+        self.levelOneBossDirection = 1
+        self.levelOneBossChance = 980
+        self.levelOneBossProjectile = None
+        self.levelOneBossHP = 100
+        self.levelOneBossProjectileX = self.levelOneBossX + 50
+        self.levelOneBossProjectileY = self.levelOneBossY + 10
+        self.levelOneBossProjectileImage = 1
+        self.levelOneBossProjectile1 = pygame.image.load("level1bossprojectile_1.png").convert()
+        self.levelOneBossProjectile2 = pygame.image.load("level1bossprojectile_2.png").convert()
+        self.levelOneBossProjectile3 = pygame.image.load("level1bossprojectile_3.png").convert()
+        self.levelOneBossProjectile4 = pygame.image.load("level1bossprojectile_4.png").convert()
+
 
         pygame.display.set_icon(self.player)
         self.animationOn = 0
@@ -146,11 +170,30 @@ class MahyarSpaceInvaderI:
         # the player sprite
         self.player = pygame.image.load("player.png").convert()
         # bomb sprites
-        self.bomb1 = pygame.image.load("rocket.png")
-        self.bomb2 = pygame.image.load("rocket2.png")
+        self.bomb1 = pygame.image.load("rocket.png").convert()
+        self.bomb2 = pygame.image.load("rocket2.png").convert()
         self.bombCurrentImage = 1
         self.bombCount = 10
         self.bomb = None
+
+        # the boss sprite
+        self.levelOneBoss = pygame.image.load("level1boss.png").convert()
+        self.levelOneBossX = 200
+        self.levelOneBossY = 10
+        self.levelOneBossLastMove = 0
+        self.levelOneBossSpeed = 10
+        self.levelOneBossDirection = 1
+        self.levelOneBossChance = 980
+        self.levelOneBossProjectile = None
+        self.levelOneBossHP = 100
+        self.levelOneBossProjectileX = self.levelOneBossX + 50
+        self.levelOneBossProjectileY = self.levelOneBossY + 10
+        self.levelOneBossProjectileImage = 1
+        self.levelOneBossProjectile1 = pygame.image.load("level1bossprojectile_1.png").convert()
+        self.levelOneBossProjectile2 = pygame.image.load("level1bossprojectile_2.png").convert()
+        self.levelOneBossProjectile3 = pygame.image.load("level1bossprojectile_3.png").convert()
+        self.levelOneBossProjectile4 = pygame.image.load("level1bossprojectile_4.png").convert()
+
 
         pygame.display.set_icon(self.player)
         self.animationOn = 0
@@ -184,6 +227,17 @@ class MahyarSpaceInvaderI:
                 barrierX = 50 * offset
                 barrierY += 3
             barrierY = 400
+
+        if self.beginner:
+            self.bombCount = 30
+            self.lives = 10
+            self.chance = 997
+        elif self.hard:
+            self.bombCount = 1
+            self.lives = 1
+            self.chance = 935
+        self.beginner = False
+        self.hard = False
 # Player --------------------------------------------------------------------------------------------------------------
     #handles the buttons for the player
     def playerUpdate(self):
@@ -212,11 +266,17 @@ class MahyarSpaceInvaderI:
                     self.bullet = None
                     self.bomb = None
                     self.chance -= 1
-                    self.score += 100
+                    if self.beginner:
+                        self.score += 10
+                    elif self.hard:
+                        self.score += 300
+                    else:
+                        self.score += 100
+
         for x in self.bullets:
-            # speed of bullet
+        # speed of bullet
             x.y += 10
-            # if bullets off the screen then remove it
+        # if bullets off the screen then remove it
             if x.y > 600:
                 self.bullets.remove(x)
         if self.bullet:
@@ -244,6 +304,7 @@ class MahyarSpaceInvaderI:
                     self.bomb = None
                     self.chance -= 1
                     self.bombCount -= 1
+
         if self.bomb:
             # speed of bullet
             self.bomb.y -= 15
@@ -326,7 +387,6 @@ class MahyarSpaceInvaderI:
                 enemy.y += 20
 
     def enemyBulletUpdate(self):
-
         if self.enemyBullet:
             self.enemyBullet.y -= 7
             if self.enemeyBullet.y < 0:
@@ -350,6 +410,25 @@ class MahyarSpaceInvaderI:
             elif self.enemyBullet and b.colliderect(self.enemyBullet):
                 self.barrierParticles.remove(b)
                 self.enemyBullet = None
+
+# Level 1 Boss ---------------------------------------------------------------------------------------------------------
+
+    def levelOneBossProjectileAnimation(self):
+        # animating the boss shooting fire images
+        if self.levelOneBossProjectileImage == 1:
+            self.screen.blit(self.levelOneBossProjectile1, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
+
+        if self.levelOneBossProjectileImage == 2:
+            self.screen.blit(self.levelOneBossProjectile2, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
+
+        if self.levelOneBossProjectileImage == 3:
+            self.screen.blit(self.levelOneBossProjectile3, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
+
+        if self.levelOneBossProjectileImage == 4:
+            self.screen.blit(self.levelOneBossProjectile4, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
+            self.levelOneBossProjectileImage = 1
+        else:
+            self.levelOneBossProjectileImage += 1
 
 # Text and Buttons -----------------------------------------------------------------------------------------------------
     def text_objects(self, text, font):
@@ -415,6 +494,7 @@ class MahyarSpaceInvaderI:
             self.buttonBorder(self.white,270,100,270,60)
             self.buttonBorder(self.brightGreen, 275,105,260,50)
             if click[0] == 1:
+                self.gameDifficulty()
                 self.run()
         else:
             self.buttonBorder(self.white, 270, 100, 270, 60)
@@ -430,7 +510,7 @@ class MahyarSpaceInvaderI:
                     quit()
 
             #black screen
-            self.screen.fill((0,0,0))
+            self.screen.fill(self.black)
             bigText = pygame.font.Font("game_font.ttf", 60)
             textSurface, textRectange = self.text_objects("Mahyar's Space Invader I", bigText)
             textRectange.center = ((self.display_width/2), (self.display_height/15))
@@ -574,7 +654,7 @@ class MahyarSpaceInvaderI:
             mouse = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()
             # quit button
-            if 505 + 260 > mouse[0] > 505 and 545 + 40 > mouse[1] > 545:
+            if 505 + 280 > mouse[0] > 505 and 545 + 40 > mouse[1] > 545:
                 self.buttonBorder(self.white, 500, 540, 290, 50)
                 self.buttonBorder(self.brightGreen, 505, 545, 280, 40)
                 if click[0] == 1:
@@ -585,7 +665,7 @@ class MahyarSpaceInvaderI:
                 self.buttonBorder(self.green, 505, 545, 280, 40)
             self.textButton("Quit", 505, 545, 280, 40)
             # back button
-            if 25 + 260 > mouse[0] > 25 and 545 + 40 > mouse[1] > 545:
+            if 25 + 280 > mouse[0] > 25 and 545 + 40 > mouse[1] > 545:
                 self.buttonBorder(self.white, 20, 540, 290, 50)
                 self.buttonBorder(self.brightGreen, 25, 545, 280, 40)
                 if click[0] == 1:
@@ -716,15 +796,16 @@ class MahyarSpaceInvaderI:
             if left and right and up and down and fire and not bomb:
                 self.screen.blit(bigFont.render("Press B to release a bomb", -1, self.lightPurple), (10, 40))
             if left and right and up and down and fire and bomb and tutorialCount == 0:
-                self.screen.blit(bigFont.render("Remember you have a limited amount of bombs", -1, self.brightGreen), (0, 40))
-                self.screen.blit(bigFont.render("If the bomb timer equals 0 you get a new bomb", -1, self.red),(5, 80))
-                self.screen.blit(bigFont.render("Bombs give 0 points if it kills a target", -1, self.brightGreen),(15, 120))
+                self.screen.blit(medFont.render("Remember you have a limited amount of bombs", -1, self.brightGreen), (0, 40))
+                self.screen.blit(medFont.render("If the bomb timer equals 0 you get a new bomb", -1, self.red),(5, 80))
+                self.screen.blit(medFont.render("Bombs give 0 points if it kills a target", -1, self.brightGreen),(15, 120))
                 tutorialFPScount += 1
                 if tutorialFPScount == 700:
                     tutorialCount += 1
             if tutorialCount == 1:
-                self.screen.blit(bigFont.render("You lose 100 points if you shoot at the barrier", -1, self.teal), (10, 40))
-                self.screen.blit(bigFont.render("Use your bombs for emergency situations", -1, self.orange), (20, 80))
+                self.screen.blit(medFont.render("You lose 100 points if you shoot at the barrier", -1, self.teal), (10, 40))
+                self.screen.blit(medFont.render("Game Difficulty determines how many points per kill", -1, self.brightOrange),(10, 80))
+                self.screen.blit(medFont.render("Use your bombs for emergency situations", -1, self.orange), (10, 120))
                 tutorialFPScount += 1
                 if tutorialFPScount == 1400:
                     tutorialCount += 1
@@ -763,14 +844,107 @@ class MahyarSpaceInvaderI:
             self.screen.blit(self.font.render("Bombs: {}".format(self.bombCount), -1, self.white), (100, 10))
             self.screen.blit(self.font.render("Bomb Timer: {}".format(bombTimer), -1, self.white), (620, 10))
             pygame.display.update()
+# Game Difficulty ------------------------------------------------------------------------------------------------------
 
+    def gameDifficulty(self):
+        choosing = True
+        clock = pygame.time.Clock()
+        bigFont = pygame.font.Font("game_font.ttf", 60)
+        medFont = pygame.font.Font("game_font.ttf", 40)
+        smallFont = pygame.font.Font("game_font.ttf", 25)
+        while choosing:
+            # THE FPS
+            clock.tick(60)
+            # MAKES THE BACKGROUND BLACK
+            self.screen.fill(self.black)
+            # If someone clicks the X on the top right corner, exit game
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            mouse = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()
+            # quit button
+            if 495 + 280 > mouse[0] > 495 and 545 + 40 > mouse[1] > 545:
+                self.buttonBorder(self.white, 490, 540, 290, 50)
+                self.buttonBorder(self.brightGreen, 495, 545, 280, 40)
+                if click[0] == 1:
+                    pygame.quit()
+                    quit()
+            else:
+                self.buttonBorder(self.white, 490, 540, 290, 50)
+                self.buttonBorder(self.green, 495, 545, 280, 40)
+            self.textButton("Quit", 495, 545, 280, 40)
 
+            # back button
+            if 25 + 260 > mouse[0] > 25 and 545 + 40 > mouse[1] > 545:
+                self.buttonBorder(self.white, 20, 540, 290, 50)
+                self.buttonBorder(self.brightGreen, 25, 545, 280, 40)
+                if click[0] == 1:
+                    self.game_intro()
+            else:
+                self.buttonBorder(self.white, 20, 540, 290, 50)
+                self.buttonBorder(self.green, 25, 545, 280, 40)
+            self.textButton("Back", 25, 545, 280, 40)
 
+            # Beginner button
+            if 25 + 260 > mouse[0] > 25 and 125 + 40 > mouse[1] > 125:
+                self.buttonBorder(self.yellow, 20, 120, 290, 50)
+                self.buttonBorder(self.pink, 25, 125, 280, 40)
+                if click[0] == 1:
+                    self.beginner = True
+                    self.bombCount = 30
+                    self.lives = 10
+                    self.chance = 997
+                    self.run()
+            else:
+                self.buttonBorder(self.yellow, 20, 120, 290, 50)
+                self.buttonBorder(self.red, 25, 125, 280, 40)
+            self.textButton("Beginner", 25, 125, 280, 40)
 
+            # Normal button
+            if 25 + 260 > mouse[0] > 25 and 265 + 40 > mouse[1] > 275:
+                self.buttonBorder(self.yellow, 20, 260, 290, 50)
+                self.buttonBorder(self.teal, 25, 265, 280, 40)
+                if click[0] == 1:
+                    self.run()
+            else:
+                self.buttonBorder(self.yellow, 20, 260, 290, 50)
+                self.buttonBorder(self.blue, 25, 265, 280, 40)
+            self.textButton("Normal", 25, 265, 280, 40)
 
+            # Expert button
+            if 25 + 260 > mouse[0] > 25 and 405 + 40 > mouse[1] > 405:
+                self.buttonBorder(self.yellow, 20, 400, 290, 50)
+                self.buttonBorder(self.brightOrange, 25, 405, 280, 40)
+                if click[0] == 1:
+                    self.hard = True
+                    self.bombCount = 1
+                    self.lives = 1
+                    self.chance = 935
+                    self.run()
+            else:
+                self.buttonBorder(self.yellow, 20, 400, 290, 50)
+                self.buttonBorder(self.orange, 25, 405, 280, 40)
+            self.textButton("Expert", 25, 405, 280, 40)
 
+            self.screen.blit(bigFont.render("Mahyar's Space Invader I", -1, self.white), (100, 0))
+            self.screen.blit(medFont.render("Choose Your Game Difficulty", -1, self.teal), (170, 60))
 
-            # GameLOOP ------------------------------------------------------------------------------------------------------------
+            # beginner button description
+            self.screen.blit(smallFont.render("Beginner Mode starts with 10 Lives, 30 Bombs, and less points per kill.", -1, self.yellow), (15, 185))
+            self.screen.blit(smallFont.render("Beginner Mode makes the enemies shoot at a slow rate.", -1, self.yellow), (15, 215))
+
+            # normal button description
+            self.screen.blit(smallFont.render("Normal Mode starts with 3 Lives, 10 Bombs, and standard points per kill.", -1, self.yellow), (15, 325))
+            self.screen.blit(smallFont.render("Normal Mode makes the enemies shoot at the standard rate.", -1, self.yellow),(15, 355))
+
+            # expert button description
+            self.screen.blit(smallFont.render("Expert Mode starts with 1 Life, 1 Bomb, and more points per kill.", -1, self.yellow),(15, 465))
+            self.screen.blit(smallFont.render("Expert Mode makes the enemies shoot at a fast rate.", -1, self.yellow),(15, 495))
+            pygame.display.update()
+
+# GameLOOP -----------------------------------------------------------------------------------------------------------------------
     def run(self):
         highscoreCount = 1
         bombTimer = 20
@@ -804,6 +978,7 @@ class MahyarSpaceInvaderI:
                 pygame.draw.rect(self.screen, self.white, Ebullet)
             for b in self.barrierParticles:
                 pygame.draw.rect(self.screen, (100,255,100), b)
+
 
             if self.enemycount == 0:
                 self.screen.blit(pygame.font.Font("game_font.ttf", 100).render("You Win!", -1, (52,255,0)), (100,70))
