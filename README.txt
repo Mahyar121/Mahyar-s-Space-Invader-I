@@ -1,7 +1,7 @@
 Project #4 Simple Video Game
 ----------------------------
 
-	This program will launch a game which will be similar to space invaders. There is a tutorial option for new players who have not played the game before. There are control options, and high scores to encourage self improvement. When the player hits the play button, the game will let them choose the game difficulty to match their skill.
+This program will launch a game which will be similar to space invaders. There is a tutorial option for new players who have not played the game before. There are control options, and high scores to encourage self improvement. When the player hits the play button, the game will let them choose the game difficulty to match their skill.
 
 Prerequisites
 -------------
