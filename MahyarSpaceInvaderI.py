@@ -85,7 +85,7 @@ class MahyarSpaceInvaderI:
         self.bombCount = 10
         self.bomb = None
 
-       
+
 
 
         pygame.display.set_icon(self.player)
@@ -308,6 +308,7 @@ class MahyarSpaceInvaderI:
 
     def resetPlayer(self):
         self.playerPosX = 400
+        self.playerPosY = 550
 
 # ENEMY ---------------------------------------------------------------------------------------------------------------
     def enemyCreate(self):
