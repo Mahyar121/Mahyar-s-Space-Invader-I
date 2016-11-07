@@ -17,6 +17,7 @@ class MahyarSpaceInvaderI:
         self.fileName = "HighScore.json"
         self.score = 0
         self.hard = False
+        self.normal = False
         self.beginner = False
         self.userName = ""
         self.highScoreList = []
@@ -136,6 +137,8 @@ class MahyarSpaceInvaderI:
                 barrierY += 3
             barrierY = 400
 
+# PLAY AGAIN ----------------------------------------------------------------------------------------------------------
+
     def playAgain(self):
 
         self.score = 0
@@ -176,23 +179,6 @@ class MahyarSpaceInvaderI:
         self.bombCount = 10
         self.bomb = None
 
-        # the boss sprite
-        self.levelOneBoss = pygame.image.load("level1boss.png").convert()
-        self.levelOneBossX = 200
-        self.levelOneBossY = 10
-        self.levelOneBossLastMove = 0
-        self.levelOneBossSpeed = 10
-        self.levelOneBossDirection = 1
-        self.levelOneBossChance = 980
-        self.levelOneBossProjectile = None
-        self.levelOneBossHP = 100
-        self.levelOneBossProjectileX = self.levelOneBossX + 50
-        self.levelOneBossProjectileY = self.levelOneBossY + 10
-        self.levelOneBossProjectileImage = 1
-        self.levelOneBossProjectile1 = pygame.image.load("level1bossprojectile_1.png").convert()
-        self.levelOneBossProjectile2 = pygame.image.load("level1bossprojectile_2.png").convert()
-        self.levelOneBossProjectile3 = pygame.image.load("level1bossprojectile_3.png").convert()
-        self.levelOneBossProjectile4 = pygame.image.load("level1bossprojectile_4.png").convert()
 
 
         pygame.display.set_icon(self.player)
@@ -232,12 +218,19 @@ class MahyarSpaceInvaderI:
             self.bombCount = 30
             self.lives = 10
             self.chance = 997
-        elif self.hard:
+           
+        if self.hard:
             self.bombCount = 1
             self.lives = 1
             self.chance = 935
-        self.beginner = False
-        self.hard = False
+
+        if self.normal:
+            self.bombCount = 10
+            self.lives = 3
+            self.chance = 990
+
+
+
 # Player --------------------------------------------------------------------------------------------------------------
     #handles the buttons for the player
     def playerUpdate(self):
@@ -268,9 +261,9 @@ class MahyarSpaceInvaderI:
                     self.chance -= 1
                     if self.beginner:
                         self.score += 10
-                    elif self.hard:
+                    if self.hard:
                         self.score += 300
-                    else:
+                    if self.normal:
                         self.score += 100
 
         for x in self.bullets:
@@ -411,24 +404,7 @@ class MahyarSpaceInvaderI:
                 self.barrierParticles.remove(b)
                 self.enemyBullet = None
 
-# Level 1 Boss ---------------------------------------------------------------------------------------------------------
 
-    def levelOneBossProjectileAnimation(self):
-        # animating the boss shooting fire images
-        if self.levelOneBossProjectileImage == 1:
-            self.screen.blit(self.levelOneBossProjectile1, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
-
-        if self.levelOneBossProjectileImage == 2:
-            self.screen.blit(self.levelOneBossProjectile2, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
-
-        if self.levelOneBossProjectileImage == 3:
-            self.screen.blit(self.levelOneBossProjectile3, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
-
-        if self.levelOneBossProjectileImage == 4:
-            self.screen.blit(self.levelOneBossProjectile4, (self.levelOneBossProjectile.x, self.levelOneBossProjectile.y))
-            self.levelOneBossProjectileImage = 1
-        else:
-            self.levelOneBossProjectileImage += 1
 
 # Text and Buttons -----------------------------------------------------------------------------------------------------
     def text_objects(self, text, font):
@@ -893,6 +869,8 @@ class MahyarSpaceInvaderI:
                 self.buttonBorder(self.pink, 25, 125, 280, 40)
                 if click[0] == 1:
                     self.beginner = True
+                    self.normal = False
+                    self.hard = False
                     self.bombCount = 30
                     self.lives = 10
                     self.chance = 997
@@ -907,6 +885,12 @@ class MahyarSpaceInvaderI:
                 self.buttonBorder(self.yellow, 20, 260, 290, 50)
                 self.buttonBorder(self.teal, 25, 265, 280, 40)
                 if click[0] == 1:
+                    self.normal = True
+                    self.hard = False
+                    self.beginner = False
+                    self.bombCount = 10
+                    self.lives = 3
+                    self.chance = 990
                     self.run()
             else:
                 self.buttonBorder(self.yellow, 20, 260, 290, 50)
@@ -919,6 +903,8 @@ class MahyarSpaceInvaderI:
                 self.buttonBorder(self.brightOrange, 25, 405, 280, 40)
                 if click[0] == 1:
                     self.hard = True
+                    self.normal = False
+                    self.beginner = False
                     self.bombCount = 1
                     self.lives = 1
                     self.chance = 935
