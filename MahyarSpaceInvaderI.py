@@ -85,23 +85,7 @@ class MahyarSpaceInvaderI:
         self.bombCount = 10
         self.bomb = None
 
-        # the boss sprite
-        self.levelOneBoss = pygame.image.load("level1boss.png").convert()
-        self.levelOneBossX = 200
-        self.levelOneBossY = 10
-        self.levelOneBossLastMove = 0
-        self.levelOneBossSpeed = 10
-        self.levelOneBossDirection = 1
-        self.levelOneBossChance = 980
-        self.levelOneBossProjectile = None
-        self.levelOneBossHP = 100
-        self.levelOneBossProjectileX = self.levelOneBossX + 50
-        self.levelOneBossProjectileY = self.levelOneBossY + 10
-        self.levelOneBossProjectileImage = 1
-        self.levelOneBossProjectile1 = pygame.image.load("level1bossprojectile_1.png").convert()
-        self.levelOneBossProjectile2 = pygame.image.load("level1bossprojectile_2.png").convert()
-        self.levelOneBossProjectile3 = pygame.image.load("level1bossprojectile_3.png").convert()
-        self.levelOneBossProjectile4 = pygame.image.load("level1bossprojectile_4.png").convert()
+       
 
 
         pygame.display.set_icon(self.player)
@@ -218,7 +202,7 @@ class MahyarSpaceInvaderI:
             self.bombCount = 30
             self.lives = 10
             self.chance = 997
-           
+
         if self.hard:
             self.bombCount = 1
             self.lives = 1
